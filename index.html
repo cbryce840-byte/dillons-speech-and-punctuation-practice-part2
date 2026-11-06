@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dylan's Speech & Punctuation World</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti for Reward Animations -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        coral: '#FF6B6B',
+                        skyblue: '#4D96FF',
+                        sunny: '#FFD93D',
+                        limegreen: '#6BCB77',
+                        violet: '#9376E0',
+                        darkink: '#2B2D42',
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'float-slow': 'float 5s ease-in-out infinite',
+                        'bounce-gentle': 'bounceGentle 2s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 1.5s infinite',
+                        'shake': 'shake 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        bounceGentle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-6px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 0 0 rgba(255, 107, 107, 0.7)' },
+                            '70%': { boxShadow: '0 0 0 15px rgba(255, 107, 107, 0)' },
+                        },
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '25%': { transform: 'translateX(-5px)' },
+                            '75%': { transform: 'translateX(5px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f6f9fc 0%, #edf2f7 100%);
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body class="text-darkink antialiased selection:bg-coral selection:text-white pb-16">
+
+    <!-- HEADER NAVIGATION -->
+    <header class="sticky top-0 z-50 glass-card shadow-md px-4 py-3 mb-6 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="goHome()">
+                <div class="w-12 h-12 bg-coral rounded-2xl flex items-center justify-center text-white text-2xl shadow-md animate-bounce-gentle">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold tracking-wide text-darkink">
+                        Dylan's <span class="text-coral">Speech</span> & <span class="text-violet">Punctuation</span>
+                    </h1>
+                    <p class="text-xs text-gray-600 font-bold">Fun Speech Activities & Floating Punctuation Tiles for Dylan!</p>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="flex items-center space-x-3 bg-white/70 backdrop-blur-md p-1.5 rounded-full border border-white/60 shadow-inner">
+                <button id="tab-speech-btn" onclick="switchTab('speech')" 
+                        class="px-5 py-2.5 rounded-full font-bold text-sm md:text-base transition-all duration-300 flex items-center space-x-2 bg-coral text-white shadow-lg scale-105">
+                    <i class="fa-solid fa-microphone text-base"></i>
+                    <span>Speech Studio</span>
+                </button>
+                <button id="tab-punctuation-btn" onclick="switchTab('punctuation')" 
+                        class="px-5 py-2.5 rounded-full font-bold text-sm md:text-base transition-all duration-300 flex items-center space-x-2 text-gray-700 hover:text-coral">
+                    <i class="fa-solid fa-font text-base"></i>
+                    <span>Punctuation Tiles</span>
+                </button>
+            </div>
+
+            <!-- Star Counter -->
+            <div class="flex items-center space-x-2 bg-amber-100 border-2 border-amber-300 px-4 py-2 rounded-2xl shadow-md">
+                <i class="fa-solid fa-star text-amber-500 text-2xl animate-spin-slow"></i>
+                <div class="leading-none">
+                    <span id="star-counter" class="text-2xl font-black text-amber-800">0</span>
+                    <span class="block text-[10px] font-extrabold text-amber-600 uppercase">Stars Earned</span>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 py-4">
+
+        <!-- =================================================================== -->
+        <!-- MODULE 1: SPEECH & PRONUNCIATION STUDIO                             -->
+        <!-- =================================================================== -->
+        <section id="module-speech" class="space-y-6">
+            
+            <!-- View A: Categorized Home Launcher -->
+            <div id="speech-home-view" class="space-y-6">
+                <!-- Hero Banner -->
+                <div class="glass-card rounded-3xl p-6 md:p-8 border-2 border-amber-200 shadow-xl text-center bg-gradient-to-r from-amber-50 via-pink-50 to-purple-50 relative overflow-hidden">
+                    <span class="inline-block px-4 py-1.5 bg-coral text-white font-extrabold rounded-full text-xs uppercase tracking-wider mb-3 shadow">
+                        🔊 Dylan's Pronunciation Studio
+                    </span>
+                    <h2 class="text-3xl md:text-4xl font-black text-darkink mb-3">
+                        Choose a Sound to Practice!
+                    </h2>
+                    <p class="text-gray-700 max-w-2xl mx-auto text-sm md:text-base">
+                        Tap any sound category below to explore 30 tricky words per category (180 total), listen to slow and normal pronunciations, and record your voice!
+                    </p>
+                    <div class="mt-4 flex flex-wrap justify-center items-center gap-3 text-xs font-bold text-gray-600">
+                        <span class="bg-white/80 px-3 py-1.5 rounded-xl shadow-sm border">🎯 180 Total Activities</span>
+                        <span class="bg-white/80 px-3 py-1.5 rounded-xl shadow-sm border">⭐ Completed: <strong id="speech-progress-text" class="text-coral font-black">0 / 180</strong></span>
+                    </div>
+                </div>
+
+                <!-- 6 Sound Categories Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- TH Card -->
+                    <div onclick="openCategoryGallery('TH')" class="glass-card rounded-3xl p-6 border-4 border-amber-300 shadow-xl bg-gradient-to-br from-amber-100 to-amber-200 cursor-pointer transition transform hover:-translate-y-2 hover:shadow-2xl flex flex-col justify-between">
+                        <div>
+                            <div class="text-4xl mb-2">👅</div>
+                            <span class="text-xs font-black uppercase px-3 py-1 bg-white/90 rounded-full text-amber-800">30 Words</span>
+                            <h3 class="text-3xl font-black text-darkink mt-3">TH Sound</h3>
+                            <p class="text-xs text-amber-900 font-semibold mt-1">Practice 30 words like Think, Thumb, Tooth, and Mother.</p>
+                        </div>
+                        <div class="mt-6 flex items-center justify-between">
+                            <span class="text-xs font-bold text-amber-900">Click to Open Gallery →</span>
+                            <div class="w-10 h-10 bg-amber-400 text-darkink rounded-full flex items-center justify-center font-black shadow"><i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+                    </div>
+
+                    <!-- SH Card -->
+                    <div onclick="openCategoryGallery('SH')" class="glass-card rounded-3xl p-6 border-4 border-rose-300 shadow-xl bg-gradient-to-br from-rose-100 to-rose-200 cursor-pointer transition transform hover:-translate-y-2 hover:shadow-2xl flex flex-col justify-between">
+                        <div>
+                            <div class="text-4xl mb-2">🤫</div>
+                            <span class="text-xs font-black uppercase px-3 py-1 bg-white/90 rounded-full text-rose-800">30 Words</span>
+                            <h3 class="text-3xl font-black text-darkink mt-3">SH Sound</h3>
+                            <p class="text-xs text-rose-900 font-semibold mt-1">Practice 30 words like Ship, Shoe, Fish, and Wash.</p>
+                        </div>
+                        <div class="mt-6 flex items-center justify-between">
+                            <span class="text-xs font-bold text-rose-900">Click to Open Gallery →</span>
+                            <div class="w-10 h-10 bg-rose-400 text-white rounded-full flex items-center justify-center font-black shadow"><i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+                    </div>
+
+                    <!-- CH Card -->
+                    <div onclick="openCategoryGallery('CH')" class="glass-card rounded-3xl p-6 border-4 border-emerald-300 shadow-xl bg-gradient-to-br from-emerald-100 to-emerald-200 cursor-pointer transition transform hover:-translate-y-2 hover:shadow-2xl flex flex-col justify-between">
+                        <div>
+                            <div class="text-4xl mb-2">🚂</div>
+                            <span class="text-xs font-black uppercase px-3 py-1 bg-white/90 rounded-full text-emerald-800">30 Words</span>
+                            <h3 class="text-3xl font-black text-darkink mt-3">CH Sound</h3>
+                            <p class="text-xs text-emerald-900 font-semibold mt-1">Practice 30 words like Chair, Cheese, Beach, and Watch.</p>
+                        </div>
+                        <div class="mt-6 flex items-center justify-between">
+                            <span class="text-xs font-bold text-emerald-900">Click to Open Gallery →</span>
+                            <div class="w-10 h-10 bg-emerald-400 text-white rounded-full flex items-center justify-center font-black shadow"><i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+                    </div>
+
+                    <!-- S/Z Card -->
+                    <div onclick="openCategoryGallery('S/Z')" class="glass-card rounded-3xl p-6 border-4 border-sky-300 shadow-xl bg-gradient-to-br from-sky-100 to-sky-200 cursor-pointer transition transform hover:-translate-y-2 hover:shadow-2xl flex flex-col justify-between">
+                        <div>
+                            <div class="text-4xl mb-2">☀️</div>
+                            <span class="text-xs font-black uppercase px-3 py-1 bg-white/90 rounded-full text-sky-800">30 Words</span>
+                            <h3 class="text-3xl font-black text-darkink mt-3">S / Z Sound</h3>
+                            <p class="text-xs text-sky-900 font-semibold mt-1">Practice 30 words like Sun, Star, Bus, and Zebra.</p>
+                        </div>
+                        <div class="mt-6 flex items-center justify-between">
+                            <span class="text-xs font-bold text-sky-900">Click to Open Gallery →</span>
+                            <div class="w-10 h-10 bg-sky-400 text-white rounded-full flex items-center justify-center font-black shadow"><i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+                    </div>
+
+                    <!-- R Card -->
+                    <div onclick="openCategoryGallery('R')" class="glass-card rounded-3xl p-6 border-4 border-purple-300 shadow-xl bg-gradient-to-br from-purple-100 to-purple-200 cursor-pointer transition transform hover:-translate-y-2 hover:shadow-2xl flex flex-col justify-between">
+                        <div>
+                            <div class="text-4xl mb-2">🐰</div>
+                            <span class="text-xs font-black uppercase px-3 py-1 bg-white/90 rounded-full text-purple-800">30 Words</span>
+                            <h3 class="text-3xl font-black text-darkink mt-3">R Sound</h3>
+                            <p class="text-xs text-purple-900 font-semibold mt-1">Practice 30 words like Red, Rabbit, Ring, and Car.</p>
+                        </div>
+                        <div class="mt-6 flex items-center justify-between">
+                            <span class="text-xs font-bold text-purple-900">Click to Open Gallery →</span>
+                            <div class="w-10 h-10 bg-purple-400 text-white rounded-full flex items-center justify-center font-black shadow"><i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+                    </div>
+
+                    <!-- L Card -->
+                    <div onclick="openCategoryGallery('L')" class="glass-card rounded-3xl p-6 border-4 border-teal-300 shadow-xl bg-gradient-to-br from-teal-100 to-teal-200 cursor-pointer transition transform hover:-translate-y-2 hover:shadow-2xl flex flex-col justify-between">
+                        <div>
+                            <div class="text-4xl mb-2">🦁</div>
+                            <span class="text-xs font-black uppercase px-3 py-1 bg-white/90 rounded-full text-teal-800">30 Words</span>
+                            <h3 class="text-3xl font-black text-darkink mt-3">L Sound</h3>
+                            <p class="text-xs text-teal-900 font-semibold mt-1">Practice 30 words like Lion, Leaf, Lemon, and Smile.</p>
+                        </div>
+                        <div class="mt-6 flex items-center justify-between">
+                            <span class="text-xs font-bold text-teal-900">Click to Open Gallery →</span>
+                            <div class="w-10 h-10 bg-teal-400 text-white rounded-full flex items-center justify-center font-black shadow"><i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View B: Scrollable Category Gallery (Hidden by default until category selected) -->
+            <div id="speech-gallery-view" class="hidden space-y-6">
+                <!-- Gallery Top Navigation Bar -->
+                <div class="flex items-center justify-between bg-white/80 backdrop-blur-md p-4 rounded-3xl shadow-md border-2 border-gray-200">
+                    <button onclick="goHomeFromGallery()" class="bg-darkink text-white font-black px-5 py-2.5 rounded-2xl text-sm flex items-center space-x-2 shadow hover:bg-gray-800 transition">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Back to Categories</span>
+                    </button>
+                    <h3 id="gallery-title" class="text-2xl font-black text-darkink">TH Sound Gallery</h3>
+                    <div class="text-xs font-bold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-xl">Scroll down for all 30 words 👇</div>
+                </div>
+
+                <!-- Scrollable Cards Grid for Selected Category -->
+                <div id="speech-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-12">
+                    <!-- Rendered dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- MODULE 2: FLOATING TILE PUNCTUATION WORLD                           -->
+        <!-- =================================================================== -->
+        <section id="module-punctuation" class="hidden space-y-6">
+
+            <!-- Sub Header -->
+            <div class="glass-card rounded-3xl p-6 border-2 border-violet/30 shadow-xl bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <span class="inline-block px-4 py-1.5 bg-violet text-white font-extrabold rounded-full text-xs uppercase tracking-wider mb-2 shadow">
+                        ✍️ Punctuation Playground
+                    </span>
+                    <h2 class="text-2xl md:text-3xl font-black text-darkink">
+                        Floating Punctuation Tiles
+                    </h2>
+                    <p class="text-gray-600 text-xs md:text-sm">
+                        Choose ?, ., ,, or ! from the floating tiles to complete Dylan's sentence!
+                    </p>
+                </div>
+
+                <!-- Category Tabs for Punctuation -->
+                <div class="flex flex-wrap gap-2" id="punct-category-buttons">
+                    <button onclick="filterPunctuation('MIX')" id="pcat-MIX" class="punct-cat-btn px-4 py-2 rounded-2xl font-black text-sm bg-violet text-white shadow-md transition-all scale-105">
+                        🎲 Mix All (120)
+                    </button>
+                    <button onclick="filterPunctuation('?')" id="pcat-?" class="punct-cat-btn px-4 py-2 rounded-2xl font-black text-sm bg-white text-gray-700 hover:bg-gray-100 transition-all">
+                        ? Question (30)
+                    </button>
+                    <button onclick="filterPunctuation('.')" id="pcat-." class="punct-cat-btn px-4 py-2 rounded-2xl font-black text-sm bg-white text-gray-700 hover:bg-gray-100 transition-all">
+                        . Period (30)
+                    </button>
+                    <button onclick="filterPunctuation(',')" id="pcat-," class="punct-cat-btn px-4 py-2 rounded-2xl font-black text-sm bg-white text-gray-700 hover:bg-gray-100 transition-all">
+                        , Comma (30)
+                    </button>
+                    <button onclick="filterPunctuation('!')" id="pcat-!" class="punct-cat-btn px-4 py-2 rounded-2xl font-black text-sm bg-white text-gray-700 hover:bg-gray-100 transition-all">
+                        ! Exclamation (30)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Helpful Punctuation Reminder Guide Card for Dylan -->
+            <div class="glass-card rounded-3xl p-5 border-2 border-indigo-200 bg-white/90 shadow-md">
+                <h3 class="text-sm font-black uppercase tracking-wider text-violet mb-3 flex items-center space-x-2">
+                    <i class="fa-solid fa-lightbulb text-amber-400 text-lg"></i>
+                    <span>Dylan's Quick Punctuation & Comma Reminder Guide:</span>
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                    <div class="bg-indigo-50 p-3 rounded-2xl border border-indigo-100">
+                        <strong class="text-indigo-900 block text-sm mb-1">❓ Question Mark (?)</strong>
+                        <span class="text-gray-700">Used at the end of a sentence that asks something (e.g., <em>"What is your name?"</em>).</span>
+                    </div>
+                    <div class="bg-indigo-50 p-3 rounded-2xl border border-indigo-100">
+                        <strong class="text-indigo-900 block text-sm mb-1">. Period (.)</strong>
+                        <span class="text-gray-700">Used at the end of a complete statement or fact (e.g., <em>"The sun is shining."</em>).</span>
+                    </div>
+                    <div class="bg-amber-50 p-3 rounded-2xl border border-amber-200">
+                        <strong class="text-amber-900 block text-sm mb-1">, Comma (,)</strong>
+                        <span class="text-gray-700">Used when <strong>listing items or naming things</strong> in a series (e.g., <em>"I bought apples, bananas, and oranges."</em>).</span>
+                    </div>
+                    <div class="bg-indigo-50 p-3 rounded-2xl border border-indigo-100">
+                        <strong class="text-indigo-900 block text-sm mb-1">! Exclamation (!)</strong>
+                        <span class="text-gray-700">Used to show strong emotion, excitement, or surprise (e.g., <em>"Look at that rocket soar!"</em>).</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Interactive Punctuation Stage -->
+            <div class="glass-card rounded-3xl p-6 md:p-10 shadow-2xl border-4 border-violet/20 bg-gradient-to-b from-white to-purple-50 text-center relative overflow-hidden">
+                
+                <!-- Stage Header / Status -->
+                <div class="flex justify-between items-center mb-6">
+                    <span id="punct-category-title" class="text-xs md:text-sm font-black px-4 py-1.5 bg-violet/10 text-violet rounded-full uppercase tracking-wider">
+                        Mode: 🎲 Mixed Random Challenge
+                    </span>
+                    <span id="punct-sentence-counter" class="text-xs md:text-sm font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                        Sentence 1 of 120
+                    </span>
+                </div>
+
+                <!-- Sentence Display Box -->
+                <div id="sentence-display-box" class="min-h-[140px] flex items-center justify-center flex-wrap text-2xl md:text-4xl font-extrabold text-darkink leading-relaxed my-6 px-4 py-6 bg-white rounded-3xl shadow-inner border-2 border-indigo-100">
+                    <!-- Sentence parts with drop slot dynamically inserted -->
+                </div>
+
+                <!-- Listen Sentence Button -->
+                <div class="mb-8">
+                    <button onclick="speakCurrentSentence()" 
+                            class="bg-amber-400 hover:bg-amber-500 text-darkink font-black py-2.5 px-6 rounded-2xl text-sm inline-flex items-center space-x-2 shadow-md transition transform active:scale-95">
+                        <i class="fa-solid fa-volume-high text-lg"></i>
+                        <span>Listen to Full Sentence</span>
+                    </button>
+                </div>
+
+                <!-- Floating Punctuation Tile Drawer -->
+                <div class="my-6">
+                    <p class="text-xs font-black uppercase text-gray-600 tracking-wider mb-4">
+                        👇 Tap or Drag a Floating Tile to Fill the Missing Slot 👇
+                    </p>
+                    <div id="floating-tiles-container" class="flex flex-wrap items-center justify-center gap-6 min-h-[100px] py-4">
+                        <!-- Floating tiles dynamically rendered -->
+                    </div>
+                </div>
+
+                <!-- Feedback Toast -->
+                <div id="punct-feedback-bar" class="hidden mt-6 p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-300 text-emerald-800 text-center font-black text-lg flex items-center justify-center space-x-3 shadow-md animate-bounce">
+                    <i class="fa-solid fa-star text-amber-500 text-2xl"></i>
+                    <span id="punct-feedback-text">Good job, Dylan!</span>
+                </div>
+
+                <!-- Next Sentence Navigation -->
+                <div class="mt-8 pt-6 border-t border-gray-200 flex justify-center">
+                    <button onclick="nextPunctuationSentence()" 
+                            class="bg-violet hover:bg-purple-700 text-white font-black text-base py-3 px-8 rounded-2xl shadow-lg transition transform active:scale-95 flex items-center space-x-2">
+                        <span>Next Sentence</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JS APP LOGIC DATA & IMPLEMENTATION -->
+    <script>
+        /* ===================================================================
+           1. DATASETS (180 SPEECH ACTIVITIES & 120 PUNCTUATION SENTENCES)
+           =================================================================== */
+
+        // 180 SPEECH WORDS (30 PER CATEGORY ACROSS 6 SOUND GROUPS)
+        const SPEECH_DATA = [
+            // TH SOUND (30 words)
+            { id: 1, word: 'Think', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '🧠', difficulty: 'Easy', color: 'bg-amber-100 border-amber-300' },
+            { id: 2, word: 'Thumb', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '👍', difficulty: 'Easy', color: 'bg-amber-100 border-amber-300' },
+            { id: 3, word: 'Math', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '➕', difficulty: 'Easy', color: 'bg-amber-100 border-amber-300' },
+            { id: 4, word: 'Tooth', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '🦷', difficulty: 'Easy', color: 'bg-amber-100 border-amber-300' },
+            { id: 5, word: 'Mother', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '👩', difficulty: 'Medium', color: 'bg-amber-100 border-amber-300' },
+            { id: 6, word: 'Feather', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '🪶', difficulty: 'Medium', color: 'bg-amber-100 border-amber-300' },
+            { id: 7, word: 'Earth', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '🌍', difficulty: 'Medium', color: 'bg-amber-100 border-amber-300' },
+            { id: 8, word: 'Path', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '🛣️', difficulty: 'Easy', color: 'bg-amber-100 border-amber-300' },
+            { id: 9, word: 'Three', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '3️⃣', difficulty: 'Easy', color: 'bg-amber-100 border-amber-300' },
+            { id: 10, word: 'Thirteen', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '🔢', difficulty: 'Medium', color: 'bg-amber-100 border-amber-300' },
+            { id: 11, word: 'Thermometer', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '🌡️', difficulty: 'Hard', color: 'bg-amber-100 border-amber-300' },
+            { id: 12, word: 'Thunder', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '⚡', difficulty: 'Medium', color: 'bg-amber-100 border-amber-300' },
+            { id: 13, word: 'Thirsty', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '🥤', difficulty: 'Medium', color: 'bg-amber-100 border-amber-300' },
+            { id: 14, word: 'Thread', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '🧵', difficulty: 'Easy', color: 'bg-amber-100 border-amber-300' },
+            { id: 15, word: 'Throne', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '👑', difficulty: 'Medium', color: 'bg-amber-100 border-amber-300' },
+            { id: 16, word: 'Theater', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '🎭', difficulty: 'Medium', color: 'bg-amber-100 border-amber-300' },
+            { id: 17, word: 'Thick', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '📦', difficulty: 'Easy', color: 'bg-amber-100 border-amber-300' },
+            { id: 18, word: 'Thin', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '📏', difficulty: 'Easy', color: 'bg-amber-100 border-amber-300' },
+            { id: 19, word: 'Throw', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '⚾', difficulty: 'Easy', color: 'bg-amber-100 border-amber-300' },
+            { id: 20, word: 'Through', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '🚇', difficulty: 'Medium', color: 'bg-amber-100 border-amber-300' },
+            { id: 21, word: 'Father', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '👨', difficulty: 'Medium', color: 'bg-amber-100 border-amber-300' },
+            { id: 22, word: 'Brother', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '👦', difficulty: 'Medium', color: 'bg-amber-100 border-amber-300' },
+            { id: 23, word: 'Smooth', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '🧊', difficulty: 'Medium', color: 'bg-amber-100 border-amber-300' },
+            { id: 24, word: 'Breathe', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '💨', difficulty: 'Medium', color: 'bg-amber-100 border-amber-300' },
+            { id: 25, word: 'Cloth', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '🧣', difficulty: 'Easy', color: 'bg-amber-100 border-amber-300' },
+            { id: 26, word: 'Mouth', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '👄', difficulty: 'Easy', color: 'bg-amber-100 border-amber-300' },
+            { id: 27, word: 'South', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '🧭', difficulty: 'Easy', color: 'bg-amber-100 border-amber-300' },
+            { id: 28, word: 'North', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '⬆️', difficulty: 'Easy', color: 'bg-amber-100 border-amber-300' },
+            { id: 29, word: 'Author', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '✍️', difficulty: 'Medium', color: 'bg-amber-100 border-amber-300' },
+            { id: 30, word: 'Healthy', sound: 'TH', target: 'th', phonicSound: 'th-th-th', emoji: '🥗', difficulty: 'Medium', color: 'bg-amber-100 border-amber-300' },
+
+            // SH SOUND (30 words)
+            { id: 31, word: 'Ship', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🚢', difficulty: 'Easy', color: 'bg-rose-100 border-rose-300' },
+            { id: 32, word: 'Shoe', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '👟', difficulty: 'Easy', color: 'bg-rose-100 border-rose-300' },
+            { id: 33, word: 'Fish', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🐟', difficulty: 'Easy', color: 'bg-rose-100 border-rose-300' },
+            { id: 34, word: 'Wash', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🧼', difficulty: 'Easy', color: 'bg-rose-100 border-rose-300' },
+            { id: 35, word: 'Brush', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🪥', difficulty: 'Medium', color: 'bg-rose-100 border-rose-300' },
+            { id: 36, word: 'Shell', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🐚', difficulty: 'Easy', color: 'bg-rose-100 border-rose-300' },
+            { id: 37, word: 'Shadow', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '👤', difficulty: 'Medium', color: 'bg-rose-100 border-rose-300' },
+            { id: 38, word: 'Shark', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🦈', difficulty: 'Easy', color: 'bg-rose-100 border-rose-300' },
+            { id: 39, word: 'Sheep', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🐑', difficulty: 'Easy', color: 'bg-rose-100 border-rose-300' },
+            { id: 40, word: 'Shirt', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '👕', difficulty: 'Easy', color: 'bg-rose-100 border-rose-300' },
+            { id: 41, word: 'Shop', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🏬', difficulty: 'Easy', color: 'bg-rose-100 border-rose-300' },
+            { id: 42, word: 'Short', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '📏', difficulty: 'Easy', color: 'bg-rose-100 border-rose-300' },
+            { id: 43, word: 'Shout', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '📢', difficulty: 'Easy', color: 'bg-rose-100 border-rose-300' },
+            { id: 44, word: 'Show', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🎟️', difficulty: 'Easy', color: 'bg-rose-100 border-rose-300' },
+            { id: 45, word: 'Shut', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🚪', difficulty: 'Easy', color: 'bg-rose-100 border-rose-300' },
+            { id: 46, word: 'Wish', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🌠', difficulty: 'Easy', color: 'bg-rose-100 border-rose-300' },
+            { id: 47, word: 'Dish', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🍽️', difficulty: 'Easy', color: 'bg-rose-100 border-rose-300' },
+            { id: 48, word: 'Push', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🛒', difficulty: 'Easy', color: 'bg-rose-100 border-rose-300' },
+            { id: 49, word: 'Trash', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🗑️', difficulty: 'Medium', color: 'bg-rose-100 border-rose-300' },
+            { id: 50, word: 'Flash', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '📸', difficulty: 'Medium', color: 'bg-rose-100 border-rose-300' },
+            { id: 51, word: 'Crash', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '💥', difficulty: 'Medium', color: 'bg-rose-100 border-rose-300' },
+            { id: 52, word: 'Splash', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '💦', difficulty: 'Medium', color: 'bg-rose-100 border-rose-300' },
+            { id: 53, word: 'Cushion', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🛋️', difficulty: 'Medium', color: 'bg-rose-100 border-rose-300' },
+            { id: 54, word: 'Station', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🚉', difficulty: 'Hard', color: 'bg-rose-100 border-rose-300' },
+            { id: 55, word: 'Ocean', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🌊', difficulty: 'Medium', color: 'bg-rose-100 border-rose-300' },
+            { id: 56, word: 'Special', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '⭐', difficulty: 'Medium', color: 'bg-rose-100 border-rose-300' },
+            { id: 57, word: 'Musician', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🎸', difficulty: 'Hard', color: 'bg-rose-100 border-rose-300' },
+            { id: 58, word: 'Magician', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🪄', difficulty: 'Hard', color: 'bg-rose-100 border-rose-300' },
+            { id: 59, word: 'Shampoo', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '🧴', difficulty: 'Medium', color: 'bg-rose-100 border-rose-300' },
+            { id: 60, word: 'Sleeping bag', sound: 'SH', target: 'sh', phonicSound: 'sh-sh-sh', emoji: '⛺', difficulty: 'Hard', color: 'bg-rose-100 border-rose-300' },
+
+            // CH SOUND (30 words)
+            { id: 61, word: 'Chair', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🪑', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 62, word: 'Cheese', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🧀', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 63, word: 'Beach', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🏖️', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 64, word: 'Peach', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🍑', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 65, word: 'Watch', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '⌚', difficulty: 'Medium', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 66, word: 'Chicken', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🐔', difficulty: 'Medium', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 67, word: 'Lunch', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🥪', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 68, word: 'Cherry', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🍒', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 69, word: 'Chocolate', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🍫', difficulty: 'Medium', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 70, word: 'Child', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🧒', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 71, word: 'Chipmunk', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🐿️', difficulty: 'Medium', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 72, word: 'Church', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '⛪', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 73, word: 'Chop', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🔪', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 74, word: 'Chain', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '⛓️', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 75, word: 'Chalk', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🖍️', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 76, word: 'Catch', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🥎', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 77, word: 'Match', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🔥', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 78, word: 'Pitcher', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🏺', difficulty: 'Medium', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 79, word: 'Teacher', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '👩‍🏫', difficulty: 'Medium', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 80, word: 'Nature', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🌲', difficulty: 'Medium', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 81, word: 'Picture', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🖼️', difficulty: 'Medium', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 82, word: 'Future', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🚀', difficulty: 'Medium', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 83, word: 'Statue', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🗽', difficulty: 'Medium', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 84, word: 'Question', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '❓', difficulty: 'Hard', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 85, word: 'Sandwich', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🥪', difficulty: 'Medium', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 86, word: 'Rich', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '💰', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 87, word: 'March', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '📅', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 88, word: 'Torch', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🔦', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 89, word: 'Bench', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🪑', difficulty: 'Easy', color: 'bg-emerald-100 border-emerald-300' },
+            { id: 90, word: 'Branch', sound: 'CH', target: 'ch', phonicSound: 'ch-ch-ch', emoji: '🌿', difficulty: 'Medium', color: 'bg-emerald-100 border-emerald-300' },
+
+            // S / Z SOUND (30 words)
+            { id: 91, word: 'Sun', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '☀️', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 92, word: 'Star', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '⭐', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 93, word: 'Bus', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '🚌', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 94, word: 'Zoo', sound: 'S/Z', target: 'z', phonicSound: 'zzz-zzz', emoji: '🦁', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 95, word: 'Zebra', sound: 'S/Z', target: 'z', phonicSound: 'zzz-zzz', emoji: '🦓', difficulty: 'Medium', color: 'bg-sky-100 border-sky-300' },
+            { id: 96, word: 'Buzz', sound: 'S/Z', target: 'z', phonicSound: 'zzz-zzz', emoji: '🐝', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 97, word: 'Snake', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '🐍', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 98, word: 'Soap', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '🧼', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 99, word: 'Sock', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '🧦', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 100, word: 'Soup', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '🍲', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 101, word: 'Spoon', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '🥄', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 102, word: 'Slider', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '🛹', difficulty: 'Medium', color: 'bg-sky-100 border-sky-300' },
+            { id: 103, word: 'Snail', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '🐌', difficulty: 'Medium', color: 'bg-sky-100 border-sky-300' },
+            { id: 104, word: 'Spider', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '🕷️', difficulty: 'Medium', color: 'bg-sky-100 border-sky-300' },
+            { id: 105, word: 'Strawberry', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '🍓', difficulty: 'Hard', color: 'bg-sky-100 border-sky-300' },
+            { id: 106, word: 'House', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '🏠', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 107, word: 'Mouse', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '🐭', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 108, word: 'Grass', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '🌱', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 109, word: 'Glass', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '🥛', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 110, word: 'Dress', sound: 'S/Z', target: 's', phonicSound: 'sss-sss', emoji: '👗', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 111, word: 'Zipper', sound: 'S/Z', target: 'z', phonicSound: 'zzz-zzz', emoji: '🧥', difficulty: 'Medium', color: 'bg-sky-100 border-sky-300' },
+            { id: 112, word: 'Zero', sound: 'S/Z', target: 'z', phonicSound: 'zzz-zzz', emoji: '0️⃣', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 113, word: 'Puzzle', sound: 'S/Z', target: 'z', phonicSound: 'zzz-zzz', emoji: '🧩', difficulty: 'Medium', color: 'bg-sky-100 border-sky-300' },
+            { id: 114, word: 'Nozzle', sound: 'S/Z', target: 'z', phonicSound: 'zzz-zzz', emoji: '🚿', difficulty: 'Medium', color: 'bg-sky-100 border-sky-300' },
+            { id: 115, word: 'Quiz', sound: 'S/Z', target: 'z', phonicSound: 'zzz-zzz', emoji: '📝', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 116, word: 'Fizz', sound: 'S/Z', target: 'z', phonicSound: 'zzz-zzz', emoji: '🥤', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 117, word: 'Jazz', sound: 'S/Z', target: 'z', phonicSound: 'zzz-zzz', emoji: '🎷', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 118, word: 'Breeze', sound: 'S/Z', target: 'z', phonicSound: 'zzz-zzz', emoji: '🍃', difficulty: 'Medium', color: 'bg-sky-100 border-sky-300' },
+            { id: 119, word: 'Cheese', sound: 'S/Z', target: 'z', phonicSound: 'zzz-zzz', emoji: '🧀', difficulty: 'Easy', color: 'bg-sky-100 border-sky-300' },
+            { id: 120, word: 'Music', sound: 'S/Z', target: 'z', phonicSound: 'zzz-zzz', emoji: '🎵', difficulty: 'Medium', color: 'bg-sky-100 border-sky-300' },
+
+            // R SOUND (30 words)
+            { id: 121, word: 'Red', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🔴', difficulty: 'Easy', color: 'bg-purple-100 border-purple-300' },
+            { id: 122, word: 'Rabbit', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🐰', difficulty: 'Easy', color: 'bg-purple-100 border-purple-300' },
+            { id: 123, word: 'Ring', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '💍', difficulty: 'Easy', color: 'bg-purple-100 border-purple-300' },
+            { id: 124, word: 'Rain', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🌧️', difficulty: 'Easy', color: 'bg-purple-100 border-purple-300' },
+            { id: 125, word: 'Car', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🚗', difficulty: 'Easy', color: 'bg-purple-100 border-purple-300' },
+            { id: 126, word: 'Star', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🌟', difficulty: 'Medium', color: 'bg-purple-100 border-purple-300' },
+            { id: 127, word: 'Rose', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🌹', difficulty: 'Easy', color: 'bg-purple-100 border-purple-300' },
+            { id: 128, word: 'Robot', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🤖', difficulty: 'Easy', color: 'bg-purple-100 border-purple-300' },
+            { id: 129, word: 'Rocket', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🚀', difficulty: 'Medium', color: 'bg-purple-100 border-purple-300' },
+            { id: 130, word: 'Rug', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🧶', difficulty: 'Easy', color: 'bg-purple-100 border-purple-300' },
+            { id: 131, word: 'River', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🏞️', difficulty: 'Medium', color: 'bg-purple-100 border-purple-300' },
+            { id: 132, word: 'Rainbow', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🌈', difficulty: 'Medium', color: 'bg-purple-100 border-purple-300' },
+            { id: 133, word: 'Rooster', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🐓', difficulty: 'Medium', color: 'bg-purple-100 border-purple-300' },
+            { id: 134, word: 'Ruler', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '📏', difficulty: 'Easy', color: 'bg-purple-100 border-purple-300' },
+            { id: 135, word: 'Radio', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '📻', difficulty: 'Medium', color: 'bg-purple-100 border-purple-300' },
+            { id: 136, word: 'Bear', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🐻', difficulty: 'Easy', color: 'bg-purple-100 border-purple-300' },
+            { id: 137, word: 'Door', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🚪', difficulty: 'Easy', color: 'bg-purple-100 border-purple-300' },
+            { id: 138, word: 'Chair', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🪑', difficulty: 'Easy', color: 'bg-purple-100 border-purple-300' },
+            { id: 139, word: 'Pear', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🍐', difficulty: 'Easy', color: 'bg-purple-100 border-purple-300' },
+            { id: 140, word: 'Tiger', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🐅', difficulty: 'Medium', color: 'bg-purple-100 border-purple-300' },
+            { id: 141, word: 'Green', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🟢', difficulty: 'Medium', color: 'bg-purple-100 border-purple-300' },
+            { id: 142, word: 'Frog', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🐸', difficulty: 'Medium', color: 'bg-purple-100 border-purple-300' },
+            { id: 143, word: 'Tree', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🌳', difficulty: 'Medium', color: 'bg-purple-100 border-purple-300' },
+            { id: 144, word: 'Brush', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🖌️', difficulty: 'Medium', color: 'bg-purple-100 border-purple-300' },
+            { id: 145, word: 'Drum', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🥁', difficulty: 'Medium', color: 'bg-purple-100 border-purple-300' },
+            { id: 146, word: 'Truck', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🚚', difficulty: 'Medium', color: 'bg-purple-100 border-purple-300' },
+            { id: 147, word: 'Train', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🚂', difficulty: 'Medium', color: 'bg-purple-100 border-purple-300' },
+            { id: 148, word: 'Crown', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '👑', difficulty: 'Medium', color: 'bg-purple-100 border-purple-300' },
+            { id: 149, word: 'Straw', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🥤', difficulty: 'Medium', color: 'bg-purple-100 border-purple-300' },
+            { id: 150, word: 'Refrigerator', sound: 'R', target: 'r', phonicSound: 'rrr-rrr', emoji: '🧊', difficulty: 'Hard', color: 'bg-purple-100 border-purple-300' },
+
+            // L SOUND (30 words)
+            { id: 151, word: 'Lion', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🦁', difficulty: 'Easy', color: 'bg-teal-100 border-teal-300' },
+            { id: 152, word: 'Leaf', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🍃', difficulty: 'Easy', color: 'bg-teal-100 border-teal-300' },
+            { id: 153, word: 'Lemon', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🍋', difficulty: 'Easy', color: 'bg-teal-100 border-teal-300' },
+            { id: 154, word: 'Ball', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '⚽', difficulty: 'Easy', color: 'bg-teal-100 border-teal-300' },
+            { id: 155, word: 'Smile', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '😊', difficulty: 'Medium', color: 'bg-teal-100 border-teal-300' },
+            { id: 156, word: 'Bell', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🔔', difficulty: 'Easy', color: 'bg-teal-100 border-teal-300' },
+            { id: 157, word: 'Lamp', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🛋️', difficulty: 'Easy', color: 'bg-teal-100 border-teal-300' },
+            { id: 158, word: 'Lock', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🔒', difficulty: 'Easy', color: 'bg-teal-100 border-teal-300' },
+            { id: 159, word: 'Log', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🪵', difficulty: 'Easy', color: 'bg-teal-100 border-teal-300' },
+            { id: 160, word: 'Lollipop', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🍭', difficulty: 'Medium', color: 'bg-teal-100 border-teal-300' },
+            { id: 161, word: 'Ladder', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🪜', difficulty: 'Medium', color: 'bg-teal-100 border-teal-300' },
+            { id: 162, word: 'Ladybug', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🐞', difficulty: 'Medium', color: 'bg-teal-100 border-teal-300' },
+            { id: 163, word: 'Lizard', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🦎', difficulty: 'Medium', color: 'bg-teal-100 border-teal-300' },
+            { id: 164, word: 'Light', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '💡', difficulty: 'Easy', color: 'bg-teal-100 border-teal-300' },
+            { id: 165, word: 'Letter', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '✉️', difficulty: 'Easy', color: 'bg-teal-100 border-teal-300' },
+            { id: 166, word: 'Milk', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🥛', difficulty: 'Easy', color: 'bg-teal-100 border-teal-300' },
+            { id: 167, word: 'Owl', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🦉', difficulty: 'Easy', color: 'bg-teal-100 border-teal-300' },
+            { id: 168, word: 'Pool', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🏊', difficulty: 'Easy', color: 'bg-teal-100 border-teal-300' },
+            { id: 169, word: 'School', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🏫', difficulty: 'Medium', color: 'bg-teal-100 border-teal-300' },
+            { id: 170, word: 'Tulip', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🌷', difficulty: 'Medium', color: 'bg-teal-100 border-teal-300' },
+            { id: 171, word: 'Balloon', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🎈', difficulty: 'Medium', color: 'bg-teal-100 border-teal-300' },
+            { id: 172, word: 'Pencil', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '✏️', difficulty: 'Medium', color: 'bg-teal-100 border-teal-300' },
+            { id: 173, word: 'Plane', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '✈️', difficulty: 'Medium', color: 'bg-teal-100 border-teal-300' },
+            { id: 174, word: 'Plate', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🍽️', difficulty: 'Medium', color: 'bg-teal-100 border-teal-300' },
+            { id: 175, word: 'Flower', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🌸', difficulty: 'Medium', color: 'bg-teal-100 border-teal-300' },
+            { id: 176, word: 'Flag', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🚩', difficulty: 'Easy', color: 'bg-teal-100 border-teal-300' },
+            { id: 177, word: 'Gloves', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🧤', difficulty: 'Medium', color: 'bg-teal-100 border-teal-300' },
+            { id: 178, word: 'Block', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🧱', difficulty: 'Medium', color: 'bg-teal-100 border-teal-300' },
+            { id: 179, word: 'Blanket', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🛋️', difficulty: 'Medium', color: 'bg-teal-100 border-teal-300' },
+            { id: 180, word: 'Elephant', sound: 'L', target: 'l', phonicSound: 'lll-lll', emoji: '🐘', difficulty: 'Hard', color: 'bg-teal-100 border-teal-300' }
+        ];
+
+        // 120 PUNCTUATION SENTENCES (30 FOR EACH MARK: ?, ., ,, !)
+        const PUNCTUATION_DATA = {
+            '?': [
+                { parts: ["What is your name", "?"], missingIndex: 1, options: ["?", ".", "!"], speakText: "What is your name?" },
+                { parts: ["Where are you going", "?"], missingIndex: 1, options: ["?", "!", ","], speakText: "Where are you going?" },
+                { parts: ["Can you jump high", "?"], missingIndex: 1, options: ["?", ".", ","], speakText: "Can you jump high?" },
+                { parts: ["Do you like apples", "?"], missingIndex: 1, options: ["?", "!", "."], speakText: "Do you like apples?" },
+                { parts: ["Who is your teacher", "?"], missingIndex: 1, options: ["?", ",", "."], speakText: "Who is your teacher?" },
+                { parts: ["Is it raining outside", "?"], missingIndex: 1, options: ["?", ".", "!"], speakText: "Is it raining outside?" },
+                { parts: ["May I play with you", "?"], missingIndex: 1, options: ["?", "!", "."], speakText: "May I play with you?" },
+                { parts: ["How old are you", "?"], missingIndex: 1, options: ["?", ",", "."], speakText: "How old are you?" },
+                { parts: ["What time is it", "?"], missingIndex: 1, options: ["?", ".", "!"], speakText: "What time is it?" },
+                { parts: ["Where is the puppy", "?"], missingIndex: 1, options: ["?", "!", ","], speakText: "Where is the puppy?" },
+                { parts: ["Did you see the rainbow", "?"], missingIndex: 1, options: ["?", ".", "."], speakText: "Did you see the rainbow?" },
+                { parts: ["Would you like some milk", "?"], missingIndex: 1, options: ["?", "!", ","], speakText: "Would you like some milk?" },
+                { parts: ["Are we there yet", "?"], missingIndex: 1, options: ["?", ".", "!"], speakText: "Are we there yet?" },
+                { parts: ["Why is the sky blue", "?"], missingIndex: 1, options: ["?", ",", "."], speakText: "Why is the sky blue?" },
+                { parts: ["Can a frog fly", "?"], missingIndex: 1, options: ["?", ".", "!"], speakText: "Can a frog fly?" },
+                { parts: ["Have you read this book", "?"], missingIndex: 1, options: ["?", "!", ","], speakText: "Have you read this book?" },
+                { parts: ["What color is your shirt", "?"], missingIndex: 1, options: ["?", ".", "!"], speakText: "What color is your shirt?" },
+                { parts: ["Who wants to eat pizza", "?"], missingIndex: 1, options: ["?", ",", "."], speakText: "Who wants to eat pizza?" },
+                { parts: ["Is the sun shining", "?"], missingIndex: 1, options: ["?", "!", "."], speakText: "Is the sun shining?" },
+                { parts: ["Where did I put my shoes", "?"], missingIndex: 1, options: ["?", ".", ","], speakText: "Where did I put my shoes?" },
+                { parts: ["Do birds sleep at night", "?"], missingIndex: 1, options: ["?", "!", "."], speakText: "Do birds sleep at night?" },
+                { parts: ["Can you count to ten", "?"], missingIndex: 1, options: ["?", ".", ","], speakText: "Can you count to ten?" },
+                { parts: ["What is your favorite toy", "?"], missingIndex: 1, options: ["?", "!", "."], speakText: "What is your favorite toy?" },
+                { parts: ["Shall we go to the park", "?"], missingIndex: 1, options: ["?", ",", "."], speakText: "Shall we go to the park?" },
+                { parts: ["Who took the cookie", "?"], missingIndex: 1, options: ["?", ".", "!"], speakText: "Who took the cookie?" },
+                { parts: ["Are you ready to play", "?"], missingIndex: 1, options: ["?", "!", ","], speakText: "Are you ready to play?" },
+                { parts: ["Why are you smiling", "?"], missingIndex: 1, options: ["?", ".", "!"], speakText: "Why are you smiling?" },
+                { parts: ["Can I have a hug", "?"], missingIndex: 1, options: ["?", ",", "."], speakText: "Can I have a hug?" },
+                { parts: ["Is the water warm", "?"], missingIndex: 1, options: ["?", "!", "."], speakText: "Is the water warm?" },
+                { parts: ["What song should we sing", "?"], missingIndex: 1, options: ["?", ".", ","], speakText: "What song should we sing?" }
+            ],
+            '.': [
+                { parts: ["The sun is shining brightly", "."], missingIndex: 1, options: [".", "?", ","], speakText: "The sun is shining brightly." },
+                { parts: ["My dog likes to run in the grass", "."], missingIndex: 1, options: [".", "!", "?"], speakText: "My dog likes to run in the grass." },
+                { parts: ["I have a big red ball", "."], missingIndex: 1, options: [".", ",", "?"], speakText: "I have a big red ball." },
+                { parts: ["Cats love to sleep in warm spots", "."], missingIndex: 1, options: [".", "?", "!"], speakText: "Cats love to sleep in warm spots." },
+                { parts: ["She is reading a storybook", "."], missingIndex: 1, options: [".", ",", "?"], speakText: "She is reading a storybook." },
+                { parts: ["The grass is soft and green", "."], missingIndex: 1, options: [".", "!", "?"], speakText: "The grass is soft and green." },
+                { parts: ["We eat breakfast every morning", "."], missingIndex: 1, options: [".", "?", ","], speakText: "We eat breakfast every morning." },
+                { parts: ["Fish swim smoothly in the water", "."], missingIndex: 1, options: [".", ",", "!"], speakText: "Fish swim smoothly in the water." },
+                { parts: ["My bedroom is neat and clean", "."], missingIndex: 1, options: [".", "?", "!"], speakText: "My bedroom is neat and clean." },
+                { parts: ["He rides his bicycle to school", "."], missingIndex: 1, options: [".", "!", ","], speakText: "He rides his bicycle to school." },
+                { parts: ["Trees drop their colorful leaves in autumn", "."], missingIndex: 1, options: [".", "?", ","], speakText: "Trees drop their colorful leaves in autumn." },
+                { parts: ["Birds build nests high in the branches", "."], missingIndex: 1, options: [".", ",", "!"], speakText: "Birds build nests high in the branches." },
+                { parts: ["An apple is a healthy snack", "."], missingIndex: 1, options: [".", "?", "!"], speakText: "An apple is a healthy snack." },
+                { parts: ["The stars shine in the dark night sky", "."], missingIndex: 1, options: [".", "!", ","], speakText: "The stars shine in the dark night sky." },
+                { parts: ["I tie my own shoes every day", "."], missingIndex: 1, options: [".", "?", ","], speakText: "I tie my own shoes every day." },
+                { parts: ["Milk is kept cool inside the fridge", "."], missingIndex: 1, options: [".", ",", "?"], speakText: "Milk is kept cool inside the fridge." },
+                { parts: ["Rain helps the flowers grow tall", "."], missingIndex: 1, options: [".", "!", "?"], speakText: "Rain helps the flowers grow tall." },
+                { parts: ["The clock ticks quietly on the wall", "."], missingIndex: 1, options: [".", "?", ","], speakText: "The clock ticks quietly on the wall." },
+                { parts: ["I brush my teeth before bedtime", "."], missingIndex: 1, options: [".", "!", "?"], speakText: "I brush my teeth before bedtime." },
+                { parts: ["Butterflies flutter around the garden", "."], missingIndex: 1, options: [".", ",", "?"], speakText: "Butterflies flutter around the garden." },
+                { parts: ["My teacher wears colorful glasses", "."], missingIndex: 1, options: [".", "?", "!"], speakText: "My teacher wears colorful glasses." },
+                { parts: ["We walk to the playground together", "."], missingIndex: 1, options: [".", "!", ","], speakText: "We walk to the playground together." },
+                { parts: ["Bears sleep during the cold winter", "."], missingIndex: 1, options: [".", "?", ","], speakText: "Bears sleep during the cold winter." },
+                { parts: ["A small ladybug landed on my thumb", "."], missingIndex: 1, options: [".", ",", "!"], speakText: "A small ladybug landed on my thumb." },
+                { parts: ["I draw pictures with my shiny crayons", "."], missingIndex: 1, options: [".", "?", "!"], speakText: "I draw pictures with my shiny crayons." },
+                { parts: ["The duck rows across the blue pond", "."], missingIndex: 1, options: [".", "!", ","], speakText: "The duck rows across the blue pond." },
+                { parts: ["Snow falls softly on the rooftops", "."], missingIndex: 1, options: [".", "?", ","], speakText: "Snow falls softly on the rooftops." },
+                { parts: ["My favorite color is bright yellow", "."], missingIndex: 1, options: [".", ",", "!"], speakText: "My favorite color is bright yellow." },
+                { parts: ["The baker bakes fresh bread daily", "."], missingIndex: 1, options: [".", "?", "!"], speakText: "The baker bakes fresh bread daily." },
+                { parts: ["We love listening to happy music", "."], missingIndex: 1, options: [".", "!", ","], speakText: "We love listening to happy music." }
+            ],
+            ',': [
+                { parts: ["I need to pack pencils", ",", " rulers, and erasers for class."], missingIndex: 1, options: [",", ".", "?"], speakText: "I need to pack pencils, rulers, and erasers for class." },
+                { parts: ["For breakfast I ate eggs", ",", " toast, and bacon."], missingIndex: 1, options: [",", "!", "?"], speakText: "For breakfast I ate eggs, toast, and bacon." },
+                { parts: ["Red", ",", " blue, and green are primary colors."], missingIndex: 1, options: [",", ".", "!"], speakText: "Red, blue, and green are primary colors." },
+                { parts: ["We visited parks", ",", " museums, and zoos on our trip."], missingIndex: 1, options: [",", "?", "."], speakText: "We visited parks, museums, and zoos on our trip." },
+                { parts: ["Please buy milk", ",", " cheese, and butter at the store."], missingIndex: 1, options: [",", "!", "."], speakText: "Please buy milk, cheese, and butter at the store." },
+                { parts: ["Dogs", ",", " cats, and rabbits make wonderful pets."], missingIndex: 1, options: [",", ".", "?"], speakText: "Dogs, cats, and rabbits make wonderful pets." },
+                { parts: ["My backpack holds books", ",", " folders, and pens."], missingIndex: 1, options: [",", "!", "."], speakText: "My backpack holds books, folders, and pens." },
+                { parts: ["Lions", ",", " tigers, and bears live in the wild."], missingIndex: 1, options: [",", "?", "."], speakText: "Lions, tigers, and bears live in the wild." },
+                { parts: ["I packed shorts", ",", " shirts, and socks in my bag."], missingIndex: 1, options: [",", ".", "!"], speakText: "I packed shorts, shirts, and socks in my bag." },
+                { parts: ["Soccer", ",", " basketball, and tennis are fun sports."], missingIndex: 1, options: [",", "?", "."], speakText: "Soccer, basketball, and tennis are fun sports." },
+                { parts: ["Apples", ",", " bananas, and grapes are healthy fruits."], missingIndex: 1, options: [",", "!", "."], speakText: "Apples, bananas, and grapes are healthy fruits." },
+                { parts: ["We study math", ",", " science, and history at school."], missingIndex: 1, options: [",", ".", "?"], speakText: "We study math, science, and history at school." },
+                { parts: ["She likes painting", ",", " drawing, and crafting."], missingIndex: 1, options: [",", "!", "."], speakText: "She likes painting, drawing, and crafting." },
+                { parts: ["Carrots", ",", " broccoli, and peas are green veggies."], missingIndex: 1, options: [",", "?", "."], speakText: "Carrots, broccoli, and peas are green veggies." },
+                { parts: ["He plays guitar", ",", " piano, and drums in the band."], missingIndex: 1, options: [",", ".", "!"], speakText: "He plays guitar, piano, and drums in the band." },
+                { parts: ["The farm has cows", ",", " horses, and pigs."], missingIndex: 1, options: [",", "?", "."], speakText: "The farm has cows, horses, and pigs." },
+                { parts: ["Spring", ",", " summer, and autumn are seasons."], missingIndex: 1, options: [",", "!", "."], speakText: "Spring, summer, and autumn are seasons." },
+                { parts: ["I need scissors", ",", " glue, and paper for art."], missingIndex: 1, options: [",", ".", "?"], speakText: "I need scissors, glue, and paper for art." },
+                { parts: ["Birds", ",", " butterflies, and bees fly outside."], missingIndex: 1, options: [",", "!", "."], speakText: "Birds, butterflies, and bees fly outside." },
+                { parts: ["Pencils", ",", " erasers, and markers are on my desk."], missingIndex: 1, options: [",", "?", "."], speakText: "Pencils, erasers, and markers are on my desk." },
+                { parts: ["Gold", ",", " silver, and bronze medals were awarded."], missingIndex: 1, options: [",", ".", "!"], speakText: "Gold, silver, and bronze medals were awarded." },
+                { parts: ["We saw monkeys", ",", " zebras, and lions at the zoo."], missingIndex: 1, options: [",", "?", "."], speakText: "We saw monkeys, zebras, and lions at the zoo." },
+                { parts: ["Math", ",", " reading, and spelling are daily tests."], missingIndex: 1, options: [",", "!", "."], speakText: "Math, reading, and spelling are daily tests." },
+                { parts: ["Jackets", ",", " sweaters, and scarves keep us warm."], missingIndex: 1, options: [",", ".", "?"], speakText: "Jackets, sweaters, and scarves keep us warm." },
+                { parts: ["Plates", ",", " cups, and spoons are on the table."], missingIndex: 1, options: [",", "!", "."], speakText: "Plates, cups, and spoons are on the table." },
+                { parts: ["Robots", ",", " rockets, and cars are cool toys."], missingIndex: 1, options: [",", "?", "."], speakText: "Robots, rockets, and cars are cool toys." },
+                { parts: ["Shoes", ",", " socks, and boots go on our feet."], missingIndex: 1, options: [",", ".", "!"], speakText: "Shoes, socks, and boots go on our feet." },
+                { parts: ["Clouds", ",", " stars, and planets fill the sky."], missingIndex: 1, options: [",", "?", "."], speakText: "Clouds, stars, and planets fill the sky." },
+                { parts: ["Flour", ",", " sugar, and eggs make a cake."], missingIndex: 1, options: [",", "!", "."], speakText: "Flour, sugar, and eggs make a cake." },
+                { parts: ["Bicycles", ",", " scooters, and skateboards move fast."], missingIndex: 1, options: [",", ".", "?"], speakText: "Bicycles, scooters, and skateboards move fast." }
+            ],
+            '!': [
+                { parts: ["Wow, look at that rocket soar", "!"], missingIndex: 1, options: ["!", ".", "?"], speakText: "Wow, look at that rocket soar!" },
+                { parts: ["Happy Birthday to my best friend", "!"], missingIndex: 1, options: ["!", ",", "?"], speakText: "Happy Birthday to my best friend!" },
+                { parts: ["Watch out for that puddle", "!"], missingIndex: 1, options: ["!", ".", ","], speakText: "Watch out for that puddle!" },
+                { parts: ["We won the grand championship game", "!"], missingIndex: 1, options: ["!", "?", "."], speakText: "We won the grand championship game!" },
+                { parts: ["What an incredible magic trick", "!"], missingIndex: 1, options: ["!", ",", "."], speakText: "What an incredible magic trick!" },
+                { parts: ["Hooray, school is out for summer", "!"], missingIndex: 1, options: ["!", ".", "?"], speakText: "Hooray, school is out for summer!" },
+                { parts: ["That surprise cake tastes delicious", "!"], missingIndex: 1, options: ["!", ",", "."], speakText: "That surprise cake tastes delicious!" },
+                { parts: ["Look at how big that dinosaur is", "!"], missingIndex: 1, options: ["!", "?", "."], speakText: "Look at how big that dinosaur is!" },
+                { parts: ["Ouch, I bumped my knee", "!"], missingIndex: 1, options: ["!", ".", ","], speakText: "Ouch, I bumped my knee!" },
+                { parts: ["Super job on your test", "!"], missingIndex: 1, options: ["!", "?", "."], speakText: "Super job on your test!" },
+                { parts: ["Stop, don't run across the street", "!"], missingIndex: 1, options: ["!", ",", "."], speakText: "Stop, don't run across the street!" },
+                { parts: ["What a gorgeous fireworks show", "!"], missingIndex: 1, options: ["!", ".", "?"], speakText: "What a gorgeous fireworks show!" },
+                { parts: ["Yay, we are going to Disneyland", "!"], missingIndex: 1, options: ["!", ",", "."], speakText: "Yay, we are going to Disneyland!" },
+                { parts: ["That puppy is so cute", "!"], missingIndex: 1, options: ["!", "?", "."], speakText: "That puppy is so cute!" },
+                { parts: ["Run as fast as you can", "!"], missingIndex: 1, options: ["!", ".", ","], speakText: "Run as fast as you can!" },
+                { parts: ["I love this roller coaster ride", "!"], missingIndex: 1, options: ["!", "?", "."], speakText: "I love this roller coaster ride!" },
+                { parts: ["Congratulations on your award", "!"], missingIndex: 1, options: ["!", ",", "."], speakText: "Congratulations on your award!" },
+                { parts: ["Look, a shooting star just passed", "!"], missingIndex: 1, options: ["!", ".", "?"], speakText: "Look, a shooting star just passed!" },
+                { parts: ["That was an awesome movie", "!"], missingIndex: 1, options: ["!", ",", "."], speakText: "That was an awesome movie!" },
+                { parts: ["Help, my balloon is flying away", "!"], missingIndex: 1, options: ["!", "?", "."], speakText: "Help, my balloon is flying away!" },
+                { parts: ["You did an amazing work", "!"], missingIndex: 1, options: ["!", ".", ","], speakText: "You did an amazing work!" },
+                { parts: ["Look at all these colorful gifts", "!"], missingIndex: 1, options: ["!", "?", "."], speakText: "Look at all these colorful gifts!" },
+                { parts: ["Whee, this slide is super fast", "!"], missingIndex: 1, options: ["!", ",", "."], speakText: "Whee, this slide is super fast!" },
+                { parts: ["Be careful with that fragile vase", "!"], missingIndex: 1, options: ["!", ".", "?"], speakText: "Be careful with that fragile vase!" },
+                { parts: ["What an exciting day at the zoo", "!"], missingIndex: 1, options: ["!", ",", "."], speakText: "What an exciting day at the zoo!" },
+                { parts: ["Don't touch that hot oven", "!"], missingIndex: 1, options: ["!", "?", "."], speakText: "Don't touch that hot oven!" },
+                { parts: ["Boom, went the thunderstorm", "!"], missingIndex: 1, options: ["!", ".", ","], speakText: "Boom, went the thunderstorm!" },
+                { parts: ["That was the best surprise ever", "!"], missingIndex: 1, options: ["!", "?", "."], speakText: "That was the best surprise ever!" },
+                { parts: ["Look at those beautiful flowers", "!"], missingIndex: 1, options: ["!", ".", ","], speakText: "Look at those beautiful flowers!" },
+                { parts: ["We made it to the finish line", "!"], missingIndex: 1, options: ["!", "?", "."], speakText: "We made it to the finish line!" }
+            ]
+        };
+
+        // Motivational Praise Sentences for Dylan
+        const DILLON_PRAISE_LIST = [
+            "Good job, Dylan!",
+            "Awesome work, Dylan!",
+            "You are a super star, Dylan!",
+            "Fantastic job, Dylan!",
+            "Way to go, Dylan!",
+            "You nailed it, Dylan!",
+            "Brilliant thinking, Dylan!"
+        ];
+
+        function getRandomPraise() {
+            return DILLON_PRAISE_LIST[Math.floor(Math.random() * DILLON_PRAISE_LIST.length)];
+        }
+
+        /* ===================================================================
+           2. GLOBAL STATE, RANDOMIZATION & WEB SPEECH SETUP
+           =================================================================== */
+        let currentTab = 'speech';
+        let currentSpeechCategory = 'TH';
+        let starsCount = 0;
+        let speechCompletedSet = new Set();
+        
+        // Punctuation state
+        let currentPunctCategory = 'MIX';
+        let currentPunctIndex = 0;
+        let punctScoreSet = new Set(); 
+        let activePunctuationList = [];
+
+        // Web Speech API reference & Cheerful Female Voice Selection
+        const synth = window.speechSynthesis;
+        let selectedFemaleVoice = null;
+        let recognition = null;
+
+        // Shuffle Utility (Fisher-Yates)
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Voice initialization - prioritizing cheerful female voices
+        function initVoice() {
+            if (!synth) return;
+            const voices = synth.getVoices();
+            if (!voices.length) return;
+
+            const preferred = [
+                'Google UK English Female',
+                'Samantha',
+                'Karen',
+                'Victoria',
+                'Zira',
+                'Fiona',
+                'Moira',
+                'Tessa',
+                'Google US English'
+            ];
+
+            for (let name of preferred) {
+                const found = voices.find(v => v.name.includes(name));
+                if (found) {
+                    selectedFemaleVoice = found;
+                    break;
+                }
+            }
+
+            if (!selectedFemaleVoice) {
+                selectedFemaleVoice = voices.find(v => v.name.toLowerCase().includes('female') && v.lang.startsWith('en')) || 
+                                     voices.find(v => v.lang.startsWith('en')) || 
+                                     voices[0];
+            }
+        }
+
+        if (synth) {
+            initVoice();
+            if (synth.onvoiceschanged !== undefined) {
+                synth.onvoiceschanged = initVoice;
+            }
+        }
+
+        // Speech Recognition setup
+        if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRec();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+        }
+
+        /* ===================================================================
+           3. AUDIO UTILITIES (TTS & SOUND EFFECTS)
+           =================================================================== */
+        function speakWord(text, rate = 0.9, pitch = 1.25) {
+            if (!synth) return;
+            synth.cancel();
+            
+            if (!selectedFemaleVoice) {
+                initVoice();
+            }
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            if (selectedFemaleVoice) {
+                utterance.voice = selectedFemaleVoice;
+            }
+            utterance.rate = rate;
+            utterance.pitch = pitch;
+            synth.speak(utterance);
+        }
+
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 75,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        function addStarReward() {
+            starsCount += 1;
+            document.getElementById('star-counter').innerText = starsCount;
+            triggerConfetti();
+        }
+
+        /* ===================================================================
+           4. MODULE 1: SPEECH STUDIO CATEGORY & GALLERY LOGIC
+           =================================================================== */
+        window.goHome = function() {
+            switchTab('speech');
+            window.goHomeFromGallery();
+        };
+
+        window.openCategoryGallery = function(categoryKey) {
+            currentSpeechCategory = categoryKey;
+            document.getElementById('speech-home-view').classList.add('hidden');
+            document.getElementById('speech-gallery-view').classList.remove('hidden');
+            document.getElementById('gallery-title').innerText = `${categoryKey} Sound Gallery (30 Words)`;
+            renderSpeechCards();
+        };
+
+        window.goHomeFromGallery = function() {
+            document.getElementById('speech-gallery-view').classList.add('hidden');
+            document.getElementById('speech-home-view').classList.remove('hidden');
+            updateSpeechProgress();
+        };
+
+        function renderSpeechCards() {
+            const grid = document.getElementById('speech-cards-grid');
+            if (!grid) return;
+            
+            const filtered = SPEECH_DATA.filter(item => item.sound === currentSpeechCategory);
+
+            grid.innerHTML = filtered.map(item => {
+                const isCompleted = speechCompletedSet.has(item.id);
+                return `
+                    <div class="glass-card rounded-3xl p-5 shadow-lg flex flex-col justify-between border-2 transition transform hover:-translate-y-1 hover:shadow-2xl relative ${item.color}">
+                        
+                        <!-- Top Header info -->
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-black px-3 py-1 bg-white/80 rounded-full text-darkink border border-gray-200 uppercase tracking-wider">
+                                Target: <strong class="text-coral">${item.sound}</strong>
+                            </span>
+                            <span id="badge-speech-${item.id}" class="${isCompleted ? 'flex' : 'hidden'} items-center space-x-1 text-xs font-bold text-emerald-700 bg-emerald-100 border border-emerald-300 px-2.5 py-1 rounded-full">
+                                <i class="fa-solid fa-circle-check"></i> <span>Done</span>
+                            </span>
+                        </div>
+
+                        <!-- Word Display & Emoji -->
+                        <div class="text-center my-3">
+                            <div class="text-5xl mb-2 animate-bounce-gentle">${item.emoji}</div>
+                            <h3 class="text-3xl font-black tracking-wide text-darkink mb-1">${item.word}</h3>
+                            <p class="text-xs font-bold text-gray-500">Target Sound: <span class="text-coral underline font-black text-sm uppercase">${item.target}</span></p>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="space-y-2 mt-4">
+                            <!-- Listen Controls -->
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="speakWord('${item.word}', 0.9, 1.25)" 
+                                        class="bg-skyblue hover:bg-cyan-600 text-white font-extrabold py-2 px-3 rounded-2xl text-xs flex items-center justify-center space-x-1 shadow transition">
+                                    <i class="fa-solid fa-play"></i>
+                                    <span>Normal</span>
+                                </button>
+                                <button onclick="speakWord('${item.word}', 0.55, 1.25)" 
+                                        class="bg-violet hover:bg-purple-700 text-white font-extrabold py-2 px-3 rounded-2xl text-xs flex items-center justify-center space-x-1 shadow transition">
+                                    <i class="fa-solid fa-gauge-simple-low"></i>
+                                    <span>Slow</span>
+                                </button>
+                            </div>
+
+                            <!-- Microphone Interactive Recording -->
+                            <button id="mic-btn-${item.id}" onclick="startSpeechPractice(${item.id}, '${item.word}')" 
+                                    class="w-full bg-coral hover:bg-red-500 text-white font-black py-3 px-4 rounded-2xl text-sm flex items-center justify-center space-x-2 shadow-md transition transform active:scale-95">
+                                <i class="fa-solid fa-microphone text-lg"></i>
+                                <span id="mic-text-${item.id}">Tap & Speak!</span>
+                            </button>
+                        </div>
+
+                        <!-- Feedback Message Box -->
+                        <div id="speech-feedback-${item.id}" class="hidden mt-3 p-2 text-center rounded-xl font-bold text-xs"></div>
+                    </div>
+                `;
+            }).join('');
+
+            updateSpeechProgress();
+        }
+
+        function startSpeechPractice(id, targetWord) {
+            const micBtn = document.getElementById(`mic-btn-${id}`);
+            const feedbackEl = document.getElementById(`speech-feedback-${id}`);
+
+            feedbackEl.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-rose-100', 'text-rose-800');
+            feedbackEl.classList.add('bg-yellow-100', 'text-yellow-800');
+            feedbackEl.innerText = "Listening closely... Speak now, Dylan! 🎙️";
+
+            micBtn.classList.add('animate-pulse-glow', 'bg-amber-500');
+
+            if (!recognition) {
+                setTimeout(() => {
+                    handleSpeechResult(id, targetWord, targetWord);
+                }, 1600);
+                return;
+            }
+
+            try {
+                recognition.start();
+            } catch(e) {}
+
+            recognition.onresult = function(event) {
+                const spokenText = event.results[0][0].transcript.toLowerCase().trim();
+                handleSpeechResult(id, targetWord, spokenText);
+            };
+
+            recognition.onerror = function() {
+                const praise = getRandomPraise();
+                feedbackEl.classList.remove('bg-yellow-100', 'text-yellow-800');
+                feedbackEl.classList.add('bg-emerald-100', 'text-emerald-800');
+                feedbackEl.innerText = `${praise} Great effort! ⭐`;
+                speakWord(praise, 0.9, 1.25);
+                completeSpeechActivity(id);
+                resetMicBtn(id);
+            };
+
+            recognition.onend = function() {
+                resetMicBtn(id);
+            };
+        }
+
+        function resetMicBtn(id) {
+            const micBtn = document.getElementById(`mic-btn-${id}`);
+            const micText = document.getElementById(`mic-text-${id}`);
+            if (micBtn) {
+                micBtn.classList.remove('animate-pulse-glow', 'bg-amber-500');
+                if (micText) micText.innerText = "Tap & Speak!";
+            }
+        }
+
+        function handleSpeechResult(id, targetWord, spokenText) {
+            const feedbackEl = document.getElementById(`speech-feedback-${id}`);
+            feedbackEl.classList.remove('hidden', 'bg-yellow-100', 'text-yellow-800');
+            const praise = getRandomPraise();
+
+            const cleanedTarget = targetWord.toLowerCase().trim();
+            const isMatch = spokenText.includes(cleanedTarget) || cleanedTarget.includes(spokenText);
+
+            if (isMatch) {
+                feedbackEl.classList.add('bg-emerald-100', 'text-emerald-800');
+                feedbackEl.innerHTML = `<i class="fa-solid fa-star text-yellow-500"></i> ${praise} You said <strong>"${spokenText}"</strong>!`;
+                speakWord(praise, 0.9, 1.25);
+                completeSpeechActivity(id);
+            } else {
+                feedbackEl.classList.add('bg-emerald-100', 'text-emerald-800');
+                feedbackEl.innerHTML = `${praise} You said "${spokenText}". Keep practicing! ⭐`;
+                speakWord(praise, 0.9, 1.25);
+                completeSpeechActivity(id);
+            }
+        }
+
+        function completeSpeechActivity(id) {
+            if (!speechCompletedSet.has(id)) {
+                speechCompletedSet.add(id);
+                addStarReward();
+                const badge = document.getElementById(`badge-speech-${id}`);
+                if (badge) badge.classList.remove('hidden');
+                updateSpeechProgress();
+            }
+        }
+
+        function updateSpeechProgress() {
+            const countEl = document.getElementById('speech-progress-text');
+            if (countEl) countEl.innerText = `${speechCompletedSet.size} / 180`;
+        }
+
+        window.speakWord = speakWord;
+        window.startSpeechPractice = startSpeechPractice;
+
+        /* ===================================================================
+           5. MODULE 2: FLOATING TILE PUNCTUATION LOGIC (FULLY RANDOMIZED)
+           =================================================================== */
+        function filterPunctuation(categoryMark) {
+            currentPunctCategory = categoryMark;
+            currentPunctIndex = 0;
+
+            // Full randomization each time the category is loaded or app starts
+            if (categoryMark === 'MIX') {
+                const allSentences = [
+                    ...PUNCTUATION_DATA['?'],
+                    ...PUNCTUATION_DATA['.'],
+                    ...PUNCTUATION_DATA[','],
+                    ...PUNCTUATION_DATA['!']
+                ];
+                activePunctuationList = shuffleArray(allSentences);
+            } else {
+                activePunctuationList = shuffleArray(PUNCTUATION_DATA[categoryMark]);
+            }
+
+            const categoryMarks = ['MIX', '?', '.', ',', '!'];
+            categoryMarks.forEach(mark => {
+                const btn = document.getElementById(`pcat-${mark}`);
+                if (btn) {
+                    if (mark === categoryMark) {
+                        btn.className = "punct-cat-btn px-4 py-2 rounded-2xl font-black text-sm bg-violet text-white shadow-md transition-all scale-105";
+                    } else {
+                        btn.className = "punct-cat-btn px-4 py-2 rounded-2xl font-black text-sm bg-white text-gray-700 hover:bg-gray-100 transition-all";
+                    }
+                }
+            });
+
+            loadCurrentSentence();
+        }
+
+        function loadCurrentSentence() {
+            const item = activePunctuationList[currentPunctIndex];
+            if (!item) return;
+
+            document.getElementById('punct-feedback-bar').classList.add('hidden');
+
+            const catNames = {
+                'MIX': '🎲 Mixed Random Challenge',
+                '?': 'Question Mark (?)',
+                '.': 'Period (.)',
+                ',': 'Comma (,)',
+                '!': 'Exclamation Mark (!)'
+            };
+
+            document.getElementById('punct-category-title').innerText = `Mode: ${catNames[currentPunctCategory]}`;
+            document.getElementById('punct-sentence-counter').innerText = `Sentence ${currentPunctIndex + 1} of ${activePunctuationList.length}`;
+
+            const displayBox = document.getElementById('sentence-display-box');
+            displayBox.innerHTML = item.parts.map((part, idx) => {
+                if (idx === item.missingIndex) {
+                    return `
+                        <div id="drop-slot" 
+                             ondragover="handleDragOver(event)" 
+                             ondragleave="handleDragLeave(event)" 
+                             ondrop="handleDrop(event)"
+                             onclick="handleSlotClick()"
+                             class="drop-zone inline-flex items-center justify-center min-w-[60px] h-[55px] px-3 mx-1 bg-yellow-300/30 border-4 border-dashed border-yellow-300 rounded-2xl text-yellow-300 font-black text-3xl shadow-inner cursor-pointer transition">
+                             ?
+                        </div>
+                    `;
+                }
+                return `<span>${part}</span>`;
+            }).join(' ');
+
+            const container = document.getElementById('floating-tiles-container');
+            const shuffledOptions = shuffleArray(item.options);
+            const floatAnimations = ['animate-float', 'animate-float-slow', 'animate-bounce-gentle'];
+
+            container.innerHTML = shuffledOptions.map((opt, i) => {
+                const anim = floatAnimations[i % floatAnimations.length];
+                return `
+                    <div id="tile-${i}" 
+                         draggable="true" 
+                         ondragstart="handleDragStart(event, '${opt}')"
+                         onclick="selectFloatingTile('${opt}')" 
+                         class="tile-float ${anim} bg-gradient-to-r from-coral to-pink-500 hover:from-amber-400 hover:to-coral text-white font-black text-2xl md:text-3xl px-6 py-3.5 rounded-2xl shadow-xl cursor-pointer border-2 border-white flex items-center justify-center transform hover:scale-110 active:scale-95">
+                        ${opt}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        let draggedValue = null;
+
+        function handleDragStart(e, val) {
+            draggedValue = val;
+            e.dataTransfer.setData("text/plain", val);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            const slot = document.getElementById('drop-slot');
+            if (slot) slot.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            const slot = document.getElementById('drop-slot');
+            if (slot) slot.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const slot = document.getElementById('drop-slot');
+            if (slot) slot.classList.remove('drag-over');
+            
+            const val = e.dataTransfer.getData("text/plain") || draggedValue;
+            if (val) checkAnswer(val);
+        }
+
+        function selectFloatingTile(val) {
+            checkAnswer(val);
+        }
+
+        function handleSlotClick() {
+            speakWord("Tap one of the floating tiles below to place it here, Dylan!", 0.9, 1.25);
+        }
+
+        function checkAnswer(chosenVal) {
+            const item = activePunctuationList[currentPunctIndex];
+            const correctAnswer = item.parts[item.missingIndex];
+            const slot = document.getElementById('drop-slot');
+            if (!slot) return;
+
+            if (chosenVal === correctAnswer) {
+                slot.innerText = chosenVal;
+                slot.className = "inline-flex items-center justify-center min-w-[60px] h-[55px] px-3 mx-1 bg-emerald-500 border-4 border-white text-white font-black text-3xl rounded-2xl shadow-lg animate-bounce";
+                
+                const praise = getRandomPraise();
+                const feedbackBar = document.getElementById('punct-feedback-bar');
+                const feedbackText = document.getElementById('punct-feedback-text');
+                
+                feedbackBar.classList.remove('hidden');
+                feedbackText.innerText = `${praise} You completed the sentence with "${chosenVal}"!`;
+
+                const key = `${item.speakText}`;
+                if (!punctScoreSet.has(key)) {
+                    punctScoreSet.add(key);
+                    addStarReward();
+                }
+
+                speakCurrentSentence(praise);
+
+            } else {
+                slot.innerText = chosenVal;
+                slot.className = "inline-flex items-center justify-center min-w-[60px] h-[55px] px-3 mx-1 bg-rose-500 border-4 border-white text-white font-black text-3xl rounded-2xl shadow-lg animate-shake";
+                speakWord("Almost, Dylan! Try another floating tile!", 0.9, 1.25);
+                
+                setTimeout(() => {
+                    slot.innerText = "?";
+                    slot.className = "drop-zone inline-flex items-center justify-center min-w-[60px] h-[55px] px-3 mx-1 bg-yellow-300/30 border-4 border-dashed border-yellow-300 rounded-2xl text-yellow-300 font-black text-3xl shadow-inner cursor-pointer transition";
+                }, 1000);
+            }
+        }
+
+        function speakCurrentSentence(praisePrefix = "") {
+            const item = activePunctuationList[currentPunctIndex];
+            if (item && item.speakText) {
+                const textToSpeak = praisePrefix ? `${praisePrefix} ... ${item.speakText}` : item.speakText;
+                speakWord(textToSpeak, 0.9, 1.25);
+            }
+        }
+
+        function nextPunctuationSentence() {
+            const total = activePunctuationList.length;
+            currentPunctIndex = (currentPunctIndex + 1) % total;
+            loadCurrentSentence();
+        }
+
+        /* ===================================================================
+           6. NAVIGATION TABS LOGIC
+           =================================================================== */
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            const speechMod = document.getElementById('module-speech');
+            const punctMod = document.getElementById('module-punctuation');
+            const speechBtn = document.getElementById('tab-speech-btn');
+            const punctBtn = document.getElementById('tab-punctuation-btn');
+
+            if (tabName === 'speech') {
+                speechMod.classList.remove('hidden');
+                punctMod.classList.add('hidden');
+
+                speechBtn.className = "px-5 py-2.5 rounded-full font-bold text-sm md:text-base transition-all duration-300 flex items-center space-x-2 bg-coral text-white shadow-lg scale-105";
+                punctBtn.className = "px-5 py-2.5 rounded-full font-bold text-sm md:text-base transition-all duration-300 flex items-center space-x-2 text-gray-700 hover:text-coral";
+            } else {
+                speechMod.classList.add('hidden');
+                punctMod.classList.remove('hidden');
+
+                punctBtn.className = "px-5 py-2.5 rounded-full font-bold text-sm md:text-base transition-all duration-300 flex items-center space-x-2 bg-violet text-white shadow-lg scale-105";
+                speechBtn.className = "px-5 py-2.5 rounded-full font-bold text-sm md:text-base transition-all duration-300 flex items-center space-x-2 text-gray-700 hover:text-coral";
+            }
+        }
+
+        /* ===================================================================
+           7. INITIALIZATION ON WINDOW LOAD
+           =================================================================== */
+        window.onload = function() {
+            filterPunctuation('MIX');
+        };
+    </script>
+</body>
+</html>
+```eof
